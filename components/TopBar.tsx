@@ -1,9 +1,20 @@
-import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SvgXml } from 'react-native-svg';
+import * as Haptics from 'expo-haptics';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+  withDelay,
+  withSequence,
+  interpolateColor,
+  Easing,
+} from 'react-native-reanimated';
 
-const LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 409.63 210.99">
+const LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="85 -3 245 218">
   <path fill="__COLOR__" d="M111.2,112.83v-.95c-5.91-4.41-4.51-9.41.64-13.68-5.84-2.41-8.74-3-10.59-9.57-3.12-11.06-.8-28.42.19-39.89.69-7.94-.55-23.36,7.21-27.93,5.96-3.51,28.68-2.81,35.9-1.51,3.37.61,8.3,2.36,10.6,5.02,3.1,3.59,4.3,16.02,4.86,21.17,4.66,43.57,3.1,85.34,3.94,128.81.17,8.7,1.06,18.47-8.78,21.86-7.6,2.61-30.86,2.69-38.88,1.08-9.14-1.84-12.39-4.87-14.01-13.97-2.37-13.34-2.83-42.86-1.47-56.43.63-6.31,5.32-10.9,10.4-14.01ZM146.85,30.99c-2.15-2.13-25.45-2.55-29.4-2.03-6.49.85-4.51,9.15-4.95,13.92-1.17,12.51-2.93,25.12-1.97,37.77.65,8.53,2.12,5.87,8.35,7.92,9.6,3.16,6.77,10.1,1.54,16.14,11.79,10.06-7.64,16.52-9.08,22.91-.93,4.12.59,12.63.54,17.47-.09,10.45-1.08,20.65-.02,31.19.84,8.36,1.24,10.43,10.16,11.32,7.24.72,18.55.19,25.88-.64,1.53-.17,3.04-.81,4.54-1.17.6-.43.89-2.26.99-3.05,1.26-10.57-2-24.69-.6-35.76,1.68-34.85.23-70.07-3.88-104.73-.21-1.78-1.38-10.55-2.09-11.25Z"/>
   <path fill="__COLOR__" d="M247.07,22.58c6.86-.65,12.28,1.6,18.14,4.9,8.64,4.87,14.14,8.55,17.6,18.19,6.38,17.74,9.92,38.85,15.63,57.26,4.27,13.78,10.07,27.14,14.51,40.8,6.03,18.52,10.49,29.24-10,38.85-6.22,2.92-20.27,8.67-26.75,7.65-5.21-.82-8.18-7.15-9.97-11.5-4.57-11.06-7.84-25.99-11.03-37.77-5.81-21.45-10.61-43.21-16.78-64.56-3.52-12.21-10.72-28.08-12.53-40.17-1.15-7.71,2.61-8.85,8.94-10.92,3.38-1.1,8.73-2.4,12.24-2.73ZM277.96,179.04c1.73,1.69,5.88-.44,7.98-1.12,3.9-1.26,19.42-7.15,20.8-10.44s-.33-8.52-1.15-11.84c-3.9-15.78-11.95-32.89-16.91-48.82-5.46-17.54-9.67-35.49-14.46-53.22-.29-.54-.69-.6-1.25-.62-1.91-.05-7.1,1.72-9.83,1.92-7.99.6-20.49.8-16.62-10.76.82-2.44,7.83-11.14,1.79-11.16-1.42,0-10,1.95-10.91,2.74l-.34,1.01,40.89,142.3ZM269.33,43.2c-1.07-1.09-7.66-5.89-8.45-5.2l-1.96,6.51,10.41-1.31Z"/>
   <path fill="__COLOR__" d="M210.63,60.97c6.2-.29,12.6-1.01,18.16,2.28,11.12,6.58,6,29.53,5.4,40.16-1.46,26.15-1.53,52.35-2.11,78.58-1.5,4.8-2.7,7.63-7.77,9.15-6.11,1.82-31.03.93-38.63.47-11.44-.69-18.55-3.32-19.81-15.98-1.76-17.6,2.05-35.79,2.62-53.33.24-7.39-1.55-13.38-1.36-20.23.23-7.91.63-17.45,1.34-25.34,1.72-19.13,16.86-13.97,30.93-14.62,3.51-.16,7.64-.97,11.23-1.14ZM222.48,148.63c-.3-15.57.49-31,1.31-46.52.32-6.11,3.27-24.83-.07-29.23-2.76-3.65-17.22-.58-21.74-.39-3.88.16-19.42-.73-21.42.7-1.09.78-1.43,2.92-1.59,4.26-1.86,15.04.59,30.96-.05,46.15l-1.91,23.66,45.49,1.37ZM221.83,159.69l-45.55-1.3v16.59c0,.87,1.44,4.23,2.34,4.82,1.02.65,6.18,1.25,7.75,1.36,8.11.58,17.15-.13,25.4-.02,3.27.04,6.98,1.81,10.06-.95v-20.5Z"/>
@@ -32,8 +43,8 @@ const TITLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 175 430 1
 
 function LogoSvg({ color }: { color: string }) {
   const xml = LOGO_SVG.replace(/__COLOR__/g, color);
-  // viewBox ratio: 409.63/210.99 ≈ 1.942
-  return <SvgXml xml={xml} height={30} width={30 * (409.63 / 210.99)} />;
+  // viewBox ratio: 245/218 ≈ 1.124 (cropped to actual art bounds)
+  return <SvgXml xml={xml} height={30} width={30 * (245 / 218)} />;
 }
 
 function TitleSvg({ primary, textColor }: { primary: string; textColor: string }) {
@@ -49,35 +60,204 @@ interface TopBarProps {
   text: string;
   surface: string;
   border: string;
+  isSettingsOpen: boolean;
   onShare: () => void;
   onSaveToGallery: () => void;
   onPrint: () => void;
   onOpenSettings: () => void;
 }
 
-export function TopBar({ primary, text, surface, border, onShare, onSaveToGallery, onPrint, onOpenSettings }: TopBarProps) {
+// Animated action button: entrance slide-in from right, spring press, haptic feedback
+function AnimatedBtn({
+  onPress,
+  borderColor,
+  backgroundColor,
+  extraAnimStyle,
+  entranceDelay = 0,
+  children,
+}: {
+  onPress: () => void;
+  borderColor: string;
+  backgroundColor?: string;
+  extraAnimStyle?: object;
+  entranceDelay?: number;
+  children: React.ReactNode;
+}) {
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(0);
+  const translateX = useSharedValue(16);
+
+  useEffect(() => {
+    const easing = Easing.out(Easing.cubic);
+    opacity.value = withDelay(entranceDelay, withTiming(1, { duration: 300, easing }));
+    translateX.value = withDelay(entranceDelay, withTiming(0, { duration: 300, easing }));
+  }, []);
+
+  const pressAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }, { translateX: translateX.value }],
+    opacity: opacity.value,
+  }));
+
   return (
-    <View style={[styles.bar, { backgroundColor: surface, borderBottomColor: border }]}>
+    <Pressable
+      onPressIn={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        scale.value = withSpring(0.82, { damping: 12, stiffness: 300 });
+      }}
+      onPressOut={() => {
+        scale.value = withSpring(1, { damping: 6, stiffness: 220, mass: 0.6 });
+      }}
+      onPress={onPress}
+    >
+      <Animated.View
+        style={[
+          styles.btn,
+          { borderColor, backgroundColor: backgroundColor ?? 'transparent' },
+          pressAnimStyle,
+          extraAnimStyle,
+        ]}
+      >
+        {children}
+      </Animated.View>
+    </Pressable>
+  );
+}
+
+export function TopBar({
+  primary,
+  text,
+  surface,
+  border,
+  isSettingsOpen,
+  onShare,
+  onSaveToGallery,
+  onPrint,
+  onOpenSettings,
+}: TopBarProps) {
+  // ── Brand entrance: logo + title stagger slide in from left ──────────────
+  const logoOpacity = useSharedValue(0);
+  const logoX = useSharedValue(-16);
+  const titleOpacity = useSharedValue(0);
+  const titleX = useSharedValue(-16);
+
+  useEffect(() => {
+    const easing = Easing.out(Easing.cubic);
+    logoOpacity.value = withTiming(1, { duration: 380, easing });
+    logoX.value = withTiming(0, { duration: 380, easing });
+    titleOpacity.value = withDelay(120, withTiming(1, { duration: 380, easing }));
+    titleX.value = withDelay(120, withTiming(0, { duration: 380, easing }));
+  }, []);
+
+  const logoEntranceStyle = useAnimatedStyle(() => ({
+    opacity: logoOpacity.value,
+    transform: [{ translateX: logoX.value }],
+  }));
+  const titleEntranceStyle = useAnimatedStyle(() => ({
+    opacity: titleOpacity.value,
+    transform: [{ translateX: titleX.value }],
+  }));
+
+  // ── Logo long-press wiggle ───────────────────────────────────────────────
+  const wiggle = useSharedValue(0);
+  const handleLogoLongPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    wiggle.value = withSequence(
+      withTiming(-10, { duration: 55 }),
+      withTiming(10, { duration: 80 }),
+      withTiming(-7, { duration: 70 }),
+      withTiming(7, { duration: 70 }),
+      withTiming(-3, { duration: 60 }),
+      withTiming(0, { duration: 55 }),
+    );
+  };
+  const wiggleStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: wiggle.value }],
+  }));
+
+  // ── Settings gear rotation on open/close ────────────────────────────────
+  const gearRotation = useSharedValue(0);
+  useEffect(() => {
+    gearRotation.value = withSpring(isSettingsOpen ? 45 : 0, { damping: 12, stiffness: 200 });
+  }, [isSettingsOpen]);
+  const gearStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${gearRotation.value}deg` }],
+  }));
+
+  // ── Theme color transitions (dark ↔ light) ───────────────────────────────
+  const prevColors = useRef({ surface, border, primary });
+  const colorProgress = useSharedValue(1);
+  const fromSurface = useSharedValue(surface);
+  const toSurface = useSharedValue(surface);
+  const fromBorder = useSharedValue(border);
+  const toBorder = useSharedValue(border);
+  const fromPrimary = useSharedValue(primary);
+  const toPrimary = useSharedValue(primary);
+
+  useEffect(() => {
+    const prev = prevColors.current;
+    if (prev.surface !== surface || prev.border !== border || prev.primary !== primary) {
+      fromSurface.value = prev.surface;
+      fromBorder.value = prev.border;
+      fromPrimary.value = prev.primary;
+      toSurface.value = surface;
+      toBorder.value = border;
+      toPrimary.value = primary;
+      colorProgress.value = 0;
+      colorProgress.value = withTiming(1, { duration: 400, easing: Easing.out(Easing.quad) });
+      prevColors.current = { surface, border, primary };
+    }
+  }, [surface, border, primary]);
+
+  const barAnimStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(colorProgress.value, [0, 1], [fromSurface.value, toSurface.value]),
+    borderBottomColor: interpolateColor(colorProgress.value, [0, 1], [fromBorder.value, toBorder.value]),
+  }));
+  const separatorAnimStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(colorProgress.value, [0, 1], [fromBorder.value, toBorder.value]),
+  }));
+  const settingsBtnColorStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(colorProgress.value, [0, 1], [fromPrimary.value, toPrimary.value]),
+    borderColor: interpolateColor(colorProgress.value, [0, 1], [fromPrimary.value, toPrimary.value]),
+  }));
+
+  return (
+    <Animated.View style={[styles.bar, barAnimStyle]}>
       <View style={styles.brand}>
-        <LogoSvg color={text} />
-        <TitleSvg primary={primary} textColor={text} />
+        <Pressable onLongPress={handleLogoLongPress} delayLongPress={400}>
+          <Animated.View style={wiggleStyle}>
+            <Animated.View style={logoEntranceStyle}>
+              <LogoSvg color={text} />
+            </Animated.View>
+          </Animated.View>
+        </Pressable>
+        <Animated.View style={[{ marginTop: 7 }, titleEntranceStyle]}>
+          <TitleSvg primary={primary} textColor={text} />
+        </Animated.View>
       </View>
       <View style={styles.actions}>
-        <TouchableOpacity onPress={onSaveToGallery} style={[styles.btn, { borderColor: border }]} activeOpacity={0.75}>
+        <AnimatedBtn onPress={onSaveToGallery} borderColor={border} entranceDelay={200}>
           <Ionicons name="download-outline" size={20} color={text} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onShare} style={[styles.btn, { borderColor: border }]} activeOpacity={0.75}>
+        </AnimatedBtn>
+        <AnimatedBtn onPress={onShare} borderColor={border} entranceDelay={260}>
           <Ionicons name="share-social-outline" size={20} color={text} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onPrint} style={[styles.btn, { borderColor: border }]} activeOpacity={0.75}>
+        </AnimatedBtn>
+        <AnimatedBtn onPress={onPrint} borderColor={border} entranceDelay={320}>
           <Ionicons name="print-outline" size={20} color={text} />
-        </TouchableOpacity>
-        <View style={[styles.separator, { backgroundColor: border }]} />
-        <TouchableOpacity onPress={onOpenSettings} style={[styles.btn, { borderColor: primary, backgroundColor: primary }]} activeOpacity={0.75}>
-          <Ionicons name="settings-outline" size={20} color="#fff" />
-        </TouchableOpacity>
+        </AnimatedBtn>
+        <Animated.View style={[styles.separator, separatorAnimStyle]} />
+        <AnimatedBtn
+          onPress={onOpenSettings}
+          borderColor={primary}
+          backgroundColor={primary}
+          extraAnimStyle={settingsBtnColorStyle}
+          entranceDelay={400}
+        >
+          <Animated.View style={gearStyle}>
+            <Ionicons name="settings-outline" size={20} color="#fff" />
+          </Animated.View>
+        </AnimatedBtn>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -87,7 +267,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal: 10,
     borderBottomWidth: 1,
     elevation: 2,
     shadowColor: '#000',
@@ -97,12 +277,13 @@ const styles = StyleSheet.create({
   },
   brand: {
     flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 0,
+    alignItems: 'center',
+    gap: 8,
   },
   actions: {
     flexDirection: 'row',
     gap: 8,
+    alignItems: 'center',
   },
   btn: {
     width: 38,
@@ -114,6 +295,8 @@ const styles = StyleSheet.create({
   },
   separator: {
     width: 1,
+    height: 24,
+    alignSelf: 'center',
     marginHorizontal: 2,
   },
   icon: {

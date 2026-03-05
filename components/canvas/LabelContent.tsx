@@ -90,11 +90,11 @@ const styles = StyleSheet.create({
   },
   textWrapperRow: {
     flex: 1,
-    alignItems: 'center',
+    alignSelf: 'stretch',
     justifyContent: 'center',
   },
   textWrapperVertical: {
-    alignItems: 'center',
+    alignSelf: 'stretch',
     justifyContent: 'center',
   },
 });

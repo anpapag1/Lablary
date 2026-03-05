@@ -31,13 +31,18 @@
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#818cf8"
+        "backgroundColor": "#4f46e5"
       },
       "permissions": [
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.INTERNET"
       ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7ed6d947-683a-4bf0-995f-9b98b072f948"
+      }
     }
   }
 }

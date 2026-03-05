@@ -6,7 +6,13 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  LogBox,
 } from 'react-native';
+
+// NativeWind (react-native-css-interop) accesses SafeAreaView from react-native at startup
+// to register it for CSS interop, which triggers RN's deprecation warnOnce. Suppress it.
+LogBox.ignoreLogs(['SafeAreaView has been deprecated']);
+
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -110,6 +116,7 @@ export default function App() {
             text={theme.text}
             surface={theme.surface}
             border={theme.border}
+            isSettingsOpen={settingsVisible}
             onShare={handleShare}
             onSaveToGallery={handleSaveToGallery}
             onPrint={handlePrint}

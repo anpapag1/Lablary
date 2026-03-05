@@ -6,7 +6,10 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
+  withSequence,
+  withTiming,
 } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
 
 import { LabelState } from '../../types/label';
 import { CheckerBoard } from './CheckerBoard';
@@ -16,6 +19,7 @@ import { ResizeHandles } from './ResizeHandles';
 export interface LabelCanvasRef {
   capture: () => Promise<string>;
   resetView: () => void;
+  celebrate: () => void;
 }
 
 interface LabelCanvasProps {
@@ -45,6 +49,10 @@ export const LabelCanvas = forwardRef<LabelCanvasRef, LabelCanvasProps>(
   ) => {
     const shotRef = useRef<ViewShot>(null);
 
+    // Label wiggle + rotation for celebrate()
+    const wiggleX = useSharedValue(0);
+    const wiggleRot = useSharedValue(0);
+
     // Workspace zoom / pan state (visual only, doesn't affect export)
     const scale = useSharedValue(1);
     const lastScale = useSharedValue(1);
@@ -52,6 +60,13 @@ export const LabelCanvas = forwardRef<LabelCanvasRef, LabelCanvasProps>(
     const translateY = useSharedValue(0);
     const lastTX = useSharedValue(0);
     const lastTY = useSharedValue(0);
+
+    const labelWiggleStyle = useAnimatedStyle(() => ({
+      transform: [
+        { translateX: wiggleX.value },
+        { rotate: `${wiggleRot.value}deg` },
+      ],
+    }));
 
     useImperativeHandle(ref, () => ({
       capture: () => {
@@ -65,6 +80,27 @@ export const LabelCanvas = forwardRef<LabelCanvasRef, LabelCanvasProps>(
         lastScale.value = 1;
         lastTX.value = 0;
         lastTY.value = 0;
+      },
+      celebrate: () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        wiggleX.value = withSequence(
+          withTiming(-11, { duration: 55 }),
+          withTiming(11, { duration: 80 }),
+          withTiming(-8, { duration: 70 }),
+          withTiming(8, { duration: 70 }),
+          withTiming(-4, { duration: 65 }),
+          withTiming(4, { duration: 65 }),
+          withTiming(0, { duration: 55 }),
+        );
+        wiggleRot.value = withSequence(
+          withTiming(-7, { duration: 55 }),
+          withTiming(7, { duration: 80 }),
+          withTiming(-5, { duration: 70 }),
+          withTiming(5, { duration: 70 }),
+          withTiming(-2, { duration: 65 }),
+          withTiming(2, { duration: 65 }),
+          withTiming(0, { duration: 55 }),
+        );
       },
     }));
 
@@ -115,7 +151,7 @@ export const LabelCanvas = forwardRef<LabelCanvasRef, LabelCanvasProps>(
         <GestureDetector gesture={workspaceGesture}>
           <Animated.View style={[styles.workspaceInner, animatedWorkspace]}>
             {/* The label shadow / elevation layer */}
-            <View
+            <Animated.View
               style={[
                 styles.labelWrapper,
                 {
@@ -129,6 +165,7 @@ export const LabelCanvas = forwardRef<LabelCanvasRef, LabelCanvasProps>(
                   shadowRadius: 12,
                   elevation: 8,
                 },
+                labelWiggleStyle,
               ]}
             >
               {/* ViewShot wraps the exportable surface */}
@@ -139,7 +176,7 @@ export const LabelCanvas = forwardRef<LabelCanvasRef, LabelCanvasProps>(
               >
                 <LabelContent label={label} />
               </ViewShot>
-            </View>
+            </Animated.View>
 
             {/* Corner resize handles – rendered outside ViewShot so they don't export */}
             <ResizeHandles
@@ -151,6 +188,7 @@ export const LabelCanvas = forwardRef<LabelCanvasRef, LabelCanvasProps>(
             />
           </Animated.View>
         </GestureDetector>
+
       </View>
     );
   }
