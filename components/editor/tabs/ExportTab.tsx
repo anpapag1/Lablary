@@ -16,7 +16,6 @@ interface ExportTabProps {
   labelHeight: number;
   onShare: () => Promise<void>;
   onSaveToGallery: () => Promise<void>;
-  onPrint: () => Promise<void>;
 }
 
 export function ExportTab({
@@ -25,7 +24,6 @@ export function ExportTab({
   labelHeight,
   onShare,
   onSaveToGallery,
-  onPrint,
 }: ExportTabProps) {
   return (
     <View style={styles.container}>
@@ -49,13 +47,6 @@ export function ExportTab({
         <Text style={[styles.buttonText, { color: theme.text }]}>Save to Gallery</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: theme.surface, borderColor: theme.border, borderWidth: 1 }]}
-        onPress={onPrint}
-        activeOpacity={0.75}
-      >
-        <Text style={[styles.buttonText, { color: theme.text }]}>Print</Text>
-      </TouchableOpacity>
     </View>
   );
 }

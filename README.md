@@ -5,13 +5,12 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat&logo=typescript&logoColor=white)
 ![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-lightgrey?style=flat&logo=android&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat)
-![Stars](https://img.shields.io/github/stars/yourusername/lablary?style=flat&logo=github)
+<!-- ![Stars](https://img.shields.io/github/stars/anpapag1/lablary?style=flat&logo=github) -->
+![Banner](assets/readme/banner.png)
 
 **A mobile label design tool for people who own thermal printers and refuse to use the terrible apps that come with them.**
 
 ---
-
-## The Problem (or: Why This Exists)
 
 If you own a thermal label printer — a Niimbot, a DYMO, a Brother — you already know the frustration. The official apps are, to put it diplomatically, not great. Ugly interfaces, fonts that look like they were chosen by someone who had never *seen* a font before, icon libraries with about forty clipart-style images last updated in 2011, and customization options that feel like an afterthought.
 
@@ -29,65 +28,45 @@ The app is designed around thermal printer workflows — small, high-contrast la
 
 ---
 
+## Features
+
+**Text** — 10 Google Fonts (Inter, Roboto, Montserrat, Lato, Nunito, Oswald, Raleway, Playfair Display, Courier Prime, Pacifico), sizes 8–120px, regular/bold toggle, full color picker.
+
+**Layout** — Four modes: icon left, right, top, or text only. Adjustable padding and border radius. Five aspect ratio presets (1:1, 2:1, 3:1, 4:3, 16:9) plus custom dimensions.
+
+**Canvas** — Pinch to zoom (0.25×–4×), two-finger pan, drag handles to resize. The canvas renders exactly what gets exported, checkerboard background included.
+
+**Icon Search** — Live search across 18+ icon libraries (Material Design, Lucide, Font Awesome, Phosphor, Tabler, and more) via the Iconify API. Filter by library for a consistent visual style.
+
+**Defaults** — Set your preferred font, font size, weight, layout, and aspect ratio so every new label starts exactly where you left off.
+
+**Export** — Save a PNG to your gallery, or share via the native OS sheet to send it to any app — including your printer's companion app. Export quality is configurable in settings.
+
+> **Niimbot users:** The official Niimbot app doesn't accept images shared from other apps. To print directly from Lablary, use [NiimbotPrintHandlerApp](https://github.com/terratempest/NiimbotPrintHandlerApp) — a small open-source Android helper that receives the shared PNG and forwards it to your Niimbot over Bluetooth.
+
+> **Other printers:** If your printer's app doesn't support "Share to print" natively, there may be an open-source solution that adds support for it. If you find one, let me know and I'll add it here so others can find it too.
+
+---
+
 ## Screenshots
 
-| Editor | Icon Search | Style Panel |
-|--------|-------------|-------------|
-| ![Editor Screen](docs/screens/editor.png) | ![Icon Search](docs/screens/icon-search.png) | ![Style Panel](docs/screens/style.png) |
+| Editor Light | Editor Dark |
+|--------------|-------------|
+| ![Editor Light](assets/readme/screenshots/Light.jpg) | ![Editor Dark](assets/readme/screenshots/Dark.jpg) |
 
-![Canvas Zoom](docs/screens/canvas.png)
+| Text Tab | Icon Tab | Style Tab |
+|-------------|-------------|-------------|
+| ![Text Tab](assets/readme/screenshots/TextTab.jpg) | ![Icon Tab](assets/readme/screenshots/IconTab.jpg) | ![Style Tab](assets/readme/screenshots/StyleTab.jpg) |
 
 ---
 
 ## Demo
 
-**Creating a label from scratch** — picking a font, searching for an icon, tweaking the layout, and exporting.
+| **Creating a label from scratch** | **Icon search in action** | **Export flow** |
+|-----------------------------------|---------------------------|-----------------|
+| picking a font, searching for an icon, tweaking the layout, and exporting | searching across 18+ icon libraries in real time | saving to gallery, sharing, and sending to a printer|
+| ![Creating a Label](assets/readme/screenshots/create-label.gif) | ![Icon Search Demo](assets/readme/screenshots/icon-search.gif) | ![Export Demo](assets/readme/screenshots/export.gif) |
 
-![Creating a Label](docs/demo/create-label.gif)
-
-**Icon search in action** — searching across 18+ icon libraries in real time.
-
-![Icon Search Demo](docs/demo/icon-search.gif)
-
-**Export flow** — saving to gallery, sharing, and sending to a printer.
-
-![Export Demo](docs/demo/export.gif)
-
----
-
-## Features
-
-### Text & Typography
-
-Lablary ships with 10 Google Fonts (Inter, Roboto, Lato, Montserrat, Nunito, Oswald, Raleway, Playfair Display, Courier Prime, Pacifico) and lets you dial in font size anywhere from 8px to 120px. You can toggle between regular and bold when the font supports it. Text color is fully customizable with a proper color picker — hex values, hue sliders, the works.
-
-### Layout System
-
-There are four layout modes: icon on the left, icon on the right, icon on top, or text only. Inner padding is adjustable, three border radius styles control the shape of your label, and five aspect ratio presets (1:1, 2:1, 3:1, 4:3, 16:9) cover most real-world label formats. You can also type in custom dimensions if none of those fit your tape.
-
-### Interactive Canvas
-
-The canvas is the core of the design experience. Pinch to zoom from 0.25× to 4× to check fine detail. Two-finger pan to reposition the canvas in the workspace. Drag the corner and edge handles to resize the label directly. None of this affects the exported PNG — it's all for comfortable editing. The canvas renders exactly what will be exported, with a checkerboard background so transparency is always obvious.
-
----
-
-## Icon Search
-
-One of the reasons official label apps are so limited is that they bundle a fixed set of icons. Lablary takes a different approach: it queries the **[Iconify API](https://iconify.design/)** at search time, giving you live access to **18+ icon libraries** including Material Design, Lucide, Font Awesome, Phosphor, Tabler, Remix Icons, and more. That's tens of thousands of searchable icons, all rendered as crisp SVGs at any size.
-
-You can filter by library if you want a consistent visual style across your labels — all Lucide icons, for instance, have the same stroke weight and feel cohesive together. The app remembers which libraries you have enabled in settings, so your preferred source is always front and center.
-
----
-
-## Export & Printing
-
-Once your label is ready, you have three options from the Export tab or the top bar:
-
-- **Save to Gallery** — exports a PNG to your device's photo library at your chosen quality setting (low, medium, or high resolution).
-- **Share** — opens the native OS share sheet. Useful for sending the PNG to another app, AirDropping it, or using your printer's companion app directly.
-- **Print** — sends the label to Android's built-in Print Manager, which works with network printers and compatible USB printers.
-
-For **Niimbot printers specifically**, the official app doesn't support receiving images from other apps. To bridge that gap, check out [NiimbotPrintHandlerApp](https://github.com/terratempest/NiimbotPrintHandlerApp) — a small Android helper app that listens for shared images and forwards them directly to your Niimbot device over Bluetooth. Share the PNG from Lablary → NiimbotPrintHandlerApp → printed label.
 
 ---
 
@@ -105,7 +84,6 @@ For **Niimbot printers specifically**, the official app doesn't support receivin
 | [react-native-view-shot](https://github.com/gre/react-native-view-shot) | Canvas capture for PNG export |
 | [expo-sharing](https://docs.expo.dev/versions/latest/sdk/sharing/) | Native OS share intent |
 | [expo-media-library](https://docs.expo.dev/versions/latest/sdk/media-library/) | Save to device gallery |
-| [expo-print](https://docs.expo.dev/versions/latest/sdk/print/) | Send to Android Print Manager |
 | [expo-haptics](https://docs.expo.dev/versions/latest/sdk/haptics/) | Tactile feedback on button presses |
 
 ---
@@ -127,8 +105,7 @@ All animations — button press feedback, entrance transitions, the settings gea
 A few things that would make Lablary genuinely more powerful:
 
 - **Direct Bluetooth printer integration** — remove the need for a helper app entirely by speaking CPCL/ZPL or the Niimbot protocol directly.
-- **Label templates** — start from a pre-built layout instead of a blank canvas.
-- **Saved presets** — save your favorite color schemes and font pairings for reuse.
+- **Custom icon library** — upload your own SVG icons and use them alongside the Iconify libraries.
 - **QR codes and barcodes** — useful for inventory, asset tracking, and the occasional nerd flex.
 - **Icon favorites** — bookmark frequently used icons instead of searching every time.
 
@@ -138,8 +115,8 @@ A few things that would make Lablary genuinely more powerful:
 
 Lablary started as a Saturday afternoon project to get my home office organized. It's since turned into a small label design studio that I genuinely use every week. If you own a thermal printer and have ever stared at its official app in quiet despair, I hope this helps.
 
-Built with ☕ and mild frustration by someone with too many unlabeled cables.
+Built with Monsters and mild frustration by someone with too many unlabeled Boxes. 
 
 ---
 
-*MIT License — do whatever you want with it.*
+*MIT License — do whatever you want with it.* 

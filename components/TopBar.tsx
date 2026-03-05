@@ -67,7 +67,6 @@ interface TopBarProps {
   downloadState: DownloadState;
   onShare: () => void;
   onSaveToGallery: () => void;
-  onPrint: () => void;
   onOpenSettings: () => void;
 }
 
@@ -136,7 +135,6 @@ export function TopBar({
   downloadState,
   onShare,
   onSaveToGallery,
-  onPrint,
   onOpenSettings,
 }: TopBarProps) {
   // ── Brand entrance: logo + title stagger slide in from left ──────────────
@@ -285,16 +283,13 @@ export function TopBar({
         <AnimatedBtn onPress={onShare} borderColor={border} entranceDelay={260}>
           <Ionicons name="share-social-outline" size={20} color={text} />
         </AnimatedBtn>
-        <AnimatedBtn onPress={onPrint} borderColor={border} entranceDelay={320}>
-          <Ionicons name="print-outline" size={20} color={text} />
-        </AnimatedBtn>
         <Animated.View style={[styles.separator, separatorAnimStyle]} />
         <AnimatedBtn
           onPress={onOpenSettings}
           borderColor={primary}
           backgroundColor={primary}
           extraAnimStyle={settingsBtnColorStyle}
-          entranceDelay={400}
+          entranceDelay={320}
         >
           <Animated.View style={gearStyle}>
             <Ionicons name="settings-outline" size={20} color="#fff" />

@@ -36,7 +36,6 @@ import {
   captureLabel,
   shareLabel,
   saveLabelToGallery,
-  printLabel,
 } from './utils/exportLabel';
 
 export default function App() {
@@ -72,11 +71,6 @@ export default function App() {
     } catch (e) {
       setDownloadState('idle');
     }
-  }, []);
-
-  const handlePrint = useCallback(async () => {
-    const uri = await captureLabel(canvasRef.current);
-    await printLabel(uri);
   }, []);
 
   // ─── Font loading gate ─────────────────────────────────────────────────
@@ -128,7 +122,6 @@ export default function App() {
             downloadState={downloadState}
             onShare={handleShare}
             onSaveToGallery={handleSaveToGallery}
-            onPrint={handlePrint}
             onOpenSettings={() => setSettingsVisible(true)}
           />
 

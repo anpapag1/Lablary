@@ -11,7 +11,6 @@ import { EditorTabBar, EditorTab } from './EditorTabBar';
 import { TextTab } from './tabs/TextTab';
 import { IconTab } from './tabs/IconTab';
 import { StyleTab } from './tabs/StyleTab';
-import { ExportTab } from './tabs/ExportTab';
 
 const TAB_BAR_HEIGHT = 72;
 const SPRING = { damping: 20, stiffness: 200, mass: 0.6 };
