@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SvgXml } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
@@ -11,6 +11,7 @@ import Animated, {
   withDelay,
   withSequence,
   interpolateColor,
+  interpolate,
   Easing,
 } from 'react-native-reanimated';
 
@@ -55,12 +56,15 @@ function TitleSvg({ primary, textColor }: { primary: string; textColor: string }
   return <SvgXml xml={xml} height={30} width={30 * (430 / 155)} />;
 }
 
+export type DownloadState = 'idle' | 'saving' | 'done';
+
 interface TopBarProps {
   primary: string;
   text: string;
   surface: string;
   border: string;
   isSettingsOpen: boolean;
+  downloadState: DownloadState;
   onShare: () => void;
   onSaveToGallery: () => void;
   onPrint: () => void;
@@ -129,6 +133,7 @@ export function TopBar({
   surface,
   border,
   isSettingsOpen,
+  downloadState,
   onShare,
   onSaveToGallery,
   onPrint,
@@ -172,6 +177,35 @@ export function TopBar({
   };
   const wiggleStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: wiggle.value }],
+  }));
+
+  // ── Download button icon state (idle → saving → done) ───────────────────
+  // progress: 0 = idle, 1 = saving, 2 = done
+  const dlProgress = useSharedValue(0);
+  useEffect(() => {
+    if (downloadState === 'saving') {
+      dlProgress.value = withTiming(1, { duration: 180 });
+    } else if (downloadState === 'done') {
+      dlProgress.value = withTiming(2, { duration: 180 });
+    } else {
+      dlProgress.value = withTiming(0, { duration: 220 });
+    }
+  }, [downloadState]);
+  // Each icon fades in when progress is near its slot (0, 1, 2)
+  const dlIdleStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(dlProgress.value, [0, 0.5, 1], [1, 0, 0]),
+    transform: [{ scale: interpolate(dlProgress.value, [0, 0.5], [1, 0.5]) }],
+    position: 'absolute',
+  }));
+  const dlSavingStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(dlProgress.value, [0.5, 1, 1.5], [0, 1, 0]),
+    transform: [{ scale: interpolate(dlProgress.value, [0.5, 1, 1.5], [0.5, 1, 0.5]) }],
+    position: 'absolute',
+  }));
+  const dlDoneStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(dlProgress.value, [1.5, 2], [0, 1]),
+    transform: [{ scale: interpolate(dlProgress.value, [1.5, 2], [0.5, 1]) }],
+    position: 'absolute',
   }));
 
   // ── Settings gear rotation on open/close ────────────────────────────────
@@ -235,8 +269,18 @@ export function TopBar({
         </Animated.View>
       </View>
       <View style={styles.actions}>
-        <AnimatedBtn onPress={onSaveToGallery} borderColor={border} entranceDelay={200}>
-          <Ionicons name="download-outline" size={20} color={text} />
+        <AnimatedBtn onPress={onSaveToGallery} borderColor={downloadState === 'done' ? '#22c55e' : border} entranceDelay={200}>
+          <View style={{ width: 20, height: 20, alignItems: 'center', justifyContent: 'center' }}>
+            <Animated.View style={dlIdleStyle}>
+              <Ionicons name="download-outline" size={20} color={text} />
+            </Animated.View>
+            <Animated.View style={dlSavingStyle}>
+              <ActivityIndicator size="small" color={text} />
+            </Animated.View>
+            <Animated.View style={dlDoneStyle}>
+              <Ionicons name="checkmark" size={20} color="#22c55e" />
+            </Animated.View>
+          </View>
         </AnimatedBtn>
         <AnimatedBtn onPress={onShare} borderColor={border} entranceDelay={260}>
           <Ionicons name="share-social-outline" size={20} color={text} />

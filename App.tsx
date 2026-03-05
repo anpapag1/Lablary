@@ -29,7 +29,7 @@ import { useSettings } from './hooks/useSettings';
 import { LabelCanvas, LabelCanvasRef } from './components/canvas/LabelCanvas';
 import { EditorBottomSheet } from './components/editor/EditorBottomSheet';
 import { EditorSidePanel } from './components/editor/EditorSidePanel';
-import { TopBar } from './components/TopBar';
+import { TopBar, DownloadState } from './components/TopBar';
 import { SettingsScreen } from './components/settings/SettingsScreen';
 
 import {
@@ -46,6 +46,7 @@ export default function App() {
   const theme = getTheme(resolvedScheme);
   const { fontsLoaded, fontError } = useAppFonts();
   const [settingsVisible, setSettingsVisible] = useState(false);
+  const [downloadState, setDownloadState] = useState<DownloadState>('idle');
 
   const { label, setText, setFont, setFontSize, setFontWeight, setTextColor,
     setIcon, clearIcon, setIconColor, setLayout, setBackgroundColor, setPadding, resize, resetStyle } = useLabel();
@@ -62,8 +63,15 @@ export default function App() {
   }, []);
 
   const handleSaveToGallery = useCallback(async () => {
-    const uri = await captureLabel(canvasRef.current);
-    await saveLabelToGallery(uri);
+    setDownloadState('saving');
+    try {
+      const uri = await captureLabel(canvasRef.current);
+      await saveLabelToGallery(uri);
+      setDownloadState('done');
+      setTimeout(() => setDownloadState('idle'), 1500);
+    } catch (e) {
+      setDownloadState('idle');
+    }
   }, []);
 
   const handlePrint = useCallback(async () => {
@@ -117,6 +125,7 @@ export default function App() {
             surface={theme.surface}
             border={theme.border}
             isSettingsOpen={settingsVisible}
+            downloadState={downloadState}
             onShare={handleShare}
             onSaveToGallery={handleSaveToGallery}
             onPrint={handlePrint}
